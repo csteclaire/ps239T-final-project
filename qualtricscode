@@ -3,7 +3,7 @@
 I thought it might be prudent to paste the JavaScript and HTML code that I used to make my survey work for me, along with any tips to help people out.
 A valuable resource I used was Kyle Dropp and his website (http://kyledropp.weebly.com/conjoint.html), although I made mine much more barebones and thus might be more helpful to a wider population.
 
-## Without further ado:
+### Without further ado:
 
 <div>Please read the descriptions of the two potential welfare applicants carefully. Then, please indicate which of the two applicants you would <b>personally</b> prefer to see admitted to a welfare program.</div><span><div><span><br></span></div>Scenario 1 out of 5 </span> <font size="1"> </font>
 <table border="4" cellpadding="15" cellspacing="0" width="90%">
@@ -52,9 +52,6 @@ A valuable resource I used was Kyle Dropp and his website (http://kyledropp.weeb
 </table><br><div><br></div>
 
 <script>
-// Start of JavaScript
-// Define the Dimensions
-
 var attRaw = ["Age", "Gender",
 "Race", "Education Level", "Employment Status", "Household Information"];
 
@@ -70,7 +67,7 @@ attributes[i] = att[rand1];
 att.splice(rand1,1);
 }
 
-// Create Variables for Traits associated with each dimension.
+// Create variables for the potential outcomes of each dimension
 var age_raw = ["18-19","20-29","30-39","40+"];
 var gender_raw = ["Male","Female"];
 var race_raw = ["White","Black/African American","Hispanic/Latino/Spanish Origin"];
@@ -81,8 +78,7 @@ var household_raw = ["Lives alone","Married - no children", "Married - has child
 
 
 //Use math.random to randomly select attributes for each dimension.
-//For instance, "gender_raw[Math.floor(Math.random()*2)];" randomly pulls 
-//either the first (male) or second (female) element of gender_raw. 
+
 var age_a = age_raw[Math.floor(Math.random()*age_raw.length)];
 var gender_a = gender_raw[Math.floor(Math.random()*gender_raw.length)];
 var race_a = race_raw[Math.floor(Math.random()*race_raw.length)];
@@ -90,7 +86,6 @@ var education_a = education_raw[Math.floor(Math.random()*education_raw.length)];
 var employment_a = employment_raw[Math.floor(Math.random()*employment_raw.length)];
 var household_a = household_raw[Math.floor(Math.random()*household_raw.length)];
 
-//Use math.random to randomly select attributes for each dimension.
 var age_b = age_raw[Math.floor(Math.random()*age_raw.length)];
 var gender_b = gender_raw[Math.floor(Math.random()*gender_raw.length)];
 var race_b = race_raw[Math.floor(Math.random()*race_raw.length)];
@@ -113,8 +108,7 @@ var employment_index = attributes.indexOf("Employment Status");
 var household_index = attributes.indexOf("Household Information");
 
 // Use IndexOf Dimension and replace with appropriate trait for Candidate A
-// For instance, if "Gender" is the 3rd element in the Dimension variable, 
-//this will place Male/Female as the 3rd element of the first candidate's attributes.
+
 att_a_traits[age_index] = age_a;
 att_a_traits[gender_index] = gender_a;
 att_a_traits[race_index] = race_a;
@@ -150,4 +144,29 @@ for(i=0;i<6;i++){
 </script>
 
 ### Explanation
+My commentary (along with Kyle Dropp's, which is most of the comments in the code) is fairly explanatory. The important thing, if you're trying to do this yourself, is that this was entirely done in the HTML section of Qualtrics, NOT in the "add JavaScript" section. The reason for this is because you are defining variables in the environment that the later JavaScript needs to pull from. Using the explicit JavaScript code entry in Qualtrics doesn't allow a future question to access these defined variables. I'm not sure if this is a bug or not. Nonetheless, the start of the JavaScript is "<script>". Before that point is the HTML part of the project, which defines a table and placeholder variables that will be filled with randomized outcomes by the JavaScript code.
 
+### The follow-up code:
+Qualtrics.SurveyEngine.addOnload(function()
+{
+/*Place Your Javascript Below This Line*/
+  this.setChoiceValue(1,age_a); 
+  this.setChoiceValue(2,gender_a); 
+  this.setChoiceValue(3,race_a); 
+  this.setChoiceValue(4,education_a); 
+  this.setChoiceValue(5,employment_a); 
+  this.setChoiceValue(6,household_a); 
+  this.setChoiceValue(7,age_b); 
+  this.setChoiceValue(8,gender_b);
+  this.setChoiceValue(9,race_b); 
+  this.setChoiceValue(10,education_b); 
+  this.setChoiceValue(11,employment_b); 
+  this.setChoiceValue(12,household_b); 
+  this.setChoiceValue(13,attributes); 
+
+});
+
+### Explanation
+This next step is the most important part of the conjoint, since it saves the randomized values. If this part if not included in the Qualtrics survey, you have literally zero information about the "treatment" or condition that each respondent got. Everything would be arbitrary and would hold no educational value without it!
+
+This JavaScript code is a part of an entry-form question on Qualtrics that used HTML to hide the question from the respondent. The function "setChoiceValue" automatically fills the fields with whatever you want; in this case, it was filled with the randomized outcomes from my HTML table. This code pulls from the same variables as the first question, which is why the first question was entirely formatted in the HTML environment.
